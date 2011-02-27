@@ -1,3 +1,2 @@
 (standard-extension 'foops #f)
 (standard-extension 'ssql #f)
-(standard-extension 'ssql-pgsql #f)
