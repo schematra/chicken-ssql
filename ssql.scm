@@ -18,6 +18,10 @@
                              ,@(map (lambda (op)
                                       (let ((ssql-op (first op))
                                             (type (second op)))
+
+                                        (unless (memq (strip-syntax type) '(infix suffix prefix function))
+                                          (error "unknown operator syntax type" type))
+
                                         (let-optionals (cddr op)
                                             ((sql-op (string-upcase (->string (strip-syntax ssql-op))))
                                              (separator #f))
