@@ -19,9 +19,10 @@
                                       (let ((ssql-op (first op))
                                             (type (second op)))
                                         (let-optionals (cddr op)
-                                            ((sql-op (string-upcase (->string (strip-syntax ssql-op)))))
+                                            ((sql-op (string-upcase (->string (strip-syntax ssql-op))))
+                                             (separator #f))
                                           `((,(strip-syntax ssql-op) operands)
-                                            (self 'operator->sql ',type ,sql-op operands)))))
+                                            (self 'operator->sql ',type ,sql-op ,separator operands)))))
                                     (cddr x))))))))
 
 (define *ansi-translator*
@@ -69,7 +70,7 @@
                                                   (string-upcase (symbol->string type))
                                                   (string-join (map (lambda (x) (self 'ssql->sql x)) rest))))))
 
-               ((operator->sql type operator operands)
+               ((operator->sql type operator separator operands)
                 (case type
                   ((infix)
                    (sprintf "(~A)" (string-intersperse
@@ -84,20 +85,20 @@
                              (map (lambda (operand) 
                                     (self 'ssql->sql operand))
                                   operands)
-                             ", ")))
+                             (or separator ", "))))
                   ((suffix prefix)
                    (let ((operator (if (eq? type 'prefix)
                                        (string-append operator " ")
                                        (string-append " " operator))))
-                     (sprintf "(~A)"
-                              (string-join
-                               (list
-                                (string-intersperse
-                                 (map (lambda (operand)
-                                        (self 'ssql->sql operand))
-                                      operands)))
-                               operator
-                               type))))
+                     (string-join
+                      (list
+                       (string-intersperse
+                        (map (lambda (operand)
+                               (self 'ssql->sql operand))
+                             operands)
+                        (or separator " ")))
+                      operator
+                      type)))
                   (else (error "unknown operator syntax type" type))))
 
                ((ssql->sql ssql)
@@ -108,8 +109,9 @@
 
 (define-operators *ansi-translator*
   (select prefix)
-  (from prefix)
+  (from prefix "FROM" ", ")
   (where prefix)
+  (order prefix "ORDER BY" ", ")
   (having prefix)
   (union infix)
   (as infix)

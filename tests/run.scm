@@ -4,3 +4,5 @@
 (load-relative "ansi-test")
 ;; (load "mysql-test")
 (load-relative "pgsql-test")
+
+(test-exit)

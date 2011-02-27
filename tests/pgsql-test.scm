@@ -12,7 +12,7 @@
 
 (test-begin "selects")
 (test "Simple query"
-  "(SELECT actors.firstname, actors.lastname (FROM actors))"
+  "SELECT actors.firstname, actors.lastname FROM actors"
   (ssql->sql #t `(select (columns actors.firstname actors.lastname)
                    (from actors))))
 (test-end "selects")
