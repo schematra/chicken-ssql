@@ -9,6 +9,13 @@
 (begin-for-syntax
  (use srfi-1 srfi-13))
 
+(define (before? x y lst)
+  (let loop ((lst lst))
+    (or (null? lst)
+        (eq? x (car lst))
+        (and (not (eq? y (car lst)))
+             (loop (cdr lst))))))
+
 (define-syntax define-operators
   (ir-macro-transformer
    (lambda (x i c)
@@ -111,7 +118,15 @@
                 (let ((handler (alist-ref (list ssql) (self 'type->sql-converters) apply)))
                   (if handler
                       (self handler ssql)
-                      (error "unknown datatype" ssql))))))
+                      (error "unknown datatype" ssql))))
+
+               ((insert-clause clause ssql)
+                (let ((order (self 'clauses-order)))
+                  (let loop ((ssql ssql))
+                    (cond ((null? ssql) (list clause))
+                          ((before? (car clause) (caar ssql) order)
+                           (cons clause ssql))
+                          (else (cons (car ssql) (loop (cdr ssql))))))))))
 
 (define-operators *ansi-translator*
   (select prefix)
@@ -245,21 +260,6 @@
 	    (append (loop #f tables head) (loop #f tables tail)))
 	   (_ tables))))
 
-(define (before? x y lst)
-  (let loop ((lst lst))
-    (or (null? lst)
-        (eq? x (car lst))
-        (and (not (eq? y (car lst)))
-             (loop (cdr lst))))))
-
-(define (insert-clause engine clause ssql)
-  (let ((order (engine 'clauses-order)))
-    (let loop ((ssql ssql))
-      (cond ((null? ssql) (list clause))
-            ((before? (car clause) (caar ssql) order)
-             (cons clause ssql))
-            (else (cons (car ssql) (loop (cdr ssql))))))))
-
 (define (ssql-compose connection ssql clauses)
   (call-with-sql-engine connection
     (lambda (engine)
@@ -268,7 +268,7 @@
                           (let ((target (alist-ref (car clause) ssql)))
                             (if target
                                 (alist-update! (car clause) (append target (cdr clause)) ssql)
-                                (insert-clause engine clause ssql))))
+                                (engine 'insert-clause clause ssql))))
                         (cdr ssql)
                         clauses)))))
 
