@@ -126,7 +126,10 @@
                     (cond ((null? ssql) (list clause))
                           ((before? (car clause) (caar ssql) order)
                            (cons clause ssql))
-                          (else (cons (car ssql) (loop (cdr ssql))))))))))
+                          (else (cons (car ssql) (loop (cdr ssql))))))))
+
+               ((merge-clauses target-clause clause)
+                (append target-clause (cdr clause)))))
 
 (define-operators *ansi-translator*
   (select prefix)
@@ -265,9 +268,11 @@
     (lambda (engine)
       (cons (car ssql)
             (fold-right (lambda (clause ssql)
-                          (let ((target (alist-ref (car clause) ssql)))
-                            (if target
-                                (alist-update! (car clause) (append target (cdr clause)) ssql)
+                          (let ((target-clause (alist-ref (car clause) ssql)))
+                            (if target-clause
+                                (alist-update! (car clause)
+                                               (engine 'merge-clauses target-clause clause)
+                                               ssql)
                                 (engine 'insert-clause clause ssql))))
                         (cdr ssql)
                         clauses)))))
