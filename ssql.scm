@@ -1,6 +1,6 @@
 (module ssql
 
-(ssql->sql ssql-connection scope-table find-tables 
+(ssql->sql ssql-connection scope-table find-tables ssql-compose
  register-sql-engine! define-operators *ansi-translator*)
 
 (import chicken scheme)
@@ -37,6 +37,8 @@
                   (,symbol? . source->sql)
                   (,string? . string->sql)
                   (,number? . number->sql)))
+
+               ((clauses-order) '(columns from where order having union))
 
                ((escape-string string)
                 (string-translate* string '(("'" . "''"))))
@@ -162,12 +164,17 @@
 (define (get-sql-engine connection)
   (alist-ref (list connection) *sql-engines* apply))
 
-(define (ssql->sql connection ssql)
+(define (call-with-sql-engine connection proc)
   (let ((engine (get-sql-engine connection)))
     (if engine
 	(parameterize ((ssql-connection connection))
-	 (engine 'ssql->sql ssql))
+          (proc engine))
 	(error (sprintf "No engine found for connection object ~A" connection)))))
+
+(define (ssql->sql connection ssql)
+  (call-with-sql-engine connection
+    (lambda (engine)
+      (engine 'ssql->sql ssql))))
 
 (define (escape connection string)
   ((get-sql-engine connection) 'escape string))
@@ -237,5 +244,33 @@
 	   ((head tail ...)
 	    (append (loop #f tables head) (loop #f tables tail)))
 	   (_ tables))))
+
+(define (before? x y lst)
+  (let loop ((lst lst))
+    (or (null? lst)
+        (eq? x (car lst))
+        (and (not (eq? y (car lst)))
+             (loop (cdr lst))))))
+
+(define (insert-clause engine clause ssql)
+  (let ((order (engine 'clauses-order)))
+    (let loop ((ssql ssql))
+      (cond ((null? ssql) (list clause))
+            ((before? (car clause) (caar ssql) order)
+             (cons clause ssql))
+            (else (cons (car ssql) (loop (cdr ssql))))))))
+
+(define (ssql-compose connection ssql clauses)
+  (call-with-sql-engine connection
+    (lambda (engine)
+      (cons (car ssql)
+            (fold-right (lambda (clause ssql)
+                          (let ((target (alist-ref (car clause) ssql)))
+                            (if target
+                                (alist-update! (car clause) (append target (cdr clause)) ssql)
+                                (insert-clause engine clause ssql))))
+                        (cdr ssql)
+                        clauses)))))
+
 
 )
