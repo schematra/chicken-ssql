@@ -1,5 +1,5 @@
 ((synopsis "SQL as S-expressions")
  (category databases)
- (needs matchable postgresql)
+ (needs matchable)
  (license "BSD")
  (author "Peter Bex, Moritz Heidkamp"))
