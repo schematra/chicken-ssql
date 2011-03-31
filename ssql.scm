@@ -175,6 +175,7 @@
   (string-append infix "||")
   (= infix)
   (like infix)
+  (in infix)
   (escape infix)
   (< infix)
   (> infix)
