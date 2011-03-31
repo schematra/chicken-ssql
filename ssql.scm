@@ -43,7 +43,8 @@
                   (,pair? . pair->sql)
                   (,symbol? . source->sql)
                   (,string? . string->sql)
-                  (,number? . number->sql)))
+                  (,number? . number->sql)
+                  (,vector? . vector->sql)))
 
                ((clauses-order) '(columns from where order having union))
 
@@ -54,6 +55,13 @@
 
                ((pair->sql pair)
                 (self (car pair) (cdr pair)))
+
+               ((vector->sql vec)
+                (format "(~A)"
+                        (string-intersperse
+                         (map (lambda (s) (self 'ssql->sql s))
+                              (vector->list vec))
+                         ", ")))
 
                ((string->sql string)
                 (string-append "'" (self 'escape-string string) "'"))
