@@ -80,7 +80,10 @@
 
                ((col ssql)
                 (string-intersperse (map (lambda (colname)
-                                           (self 'ssql->sql (string->symbol (sprintf "~A.~A" (car ssql) colname))))
+                                           (self 'ssql->sql 
+                                                 (string->symbol (sprintf "~A.~A" 
+                                                                          (car ssql)
+                                                                          (self 'ssql->sql colname)))))
                                          (cdr ssql))
                                     ", "))
 
