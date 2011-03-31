@@ -26,7 +26,7 @@
                                       (let ((ssql-op (first op))
                                             (type (second op)))
 
-                                        (unless (memq (strip-syntax type) '(infix suffix prefix function))
+                                        (unless (memq (strip-syntax type) '(infix infix* suffix prefix function))
                                           (error "unknown operator syntax type" type))
 
                                         (let-optionals (cddr op)
@@ -86,11 +86,15 @@
                ((operator->sql type operator separator operands)
                 (case type
                   ((infix)
-                   (sprintf "(~A)" (string-intersperse
-                                    (map (lambda (operand) 
-                                           (self 'ssql->sql operand))
-                                         operands)
-                                    (string-append " " operator " "))))
+                   (sprintf "(~A)" (self 'operator->sql 'infix* operator separator operands)))
+
+                  ((infix*)
+                   (string-intersperse
+                    (map (lambda (operand) 
+                           (self 'ssql->sql operand))
+                         operands)
+                    (string-append " " operator " ")))
+
                   ((function)
                    (sprintf "~A(~A)"
                             operator
@@ -138,7 +142,7 @@
   (order prefix "ORDER BY" ", ")
   (having prefix)
   (union infix)
-  (as infix)
+  (as infix*)
   (asc suffix)
   (desc suffix)
   (on prefix)

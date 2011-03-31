@@ -7,8 +7,8 @@
   (ssql->sql #f `(select (columns actors.firstname actors.lastname)
                    (from actors))))
 (test "Many columns"
-  "SELECT actors.id, actors.firstname, actors.lastname, roles.character, roles.movie_id FROM actors, roles"
-  (ssql->sql #f `(select (columns (col actors id firstname lastname) (col roles character movie_id))
+  "SELECT actors.id, actors.firstname, actors.lastname, roles.character, roles.movie_id AS movie FROM actors, roles"
+  (ssql->sql #f `(select (columns (col actors id firstname lastname) (col roles character (as movie_id movie)))
                    (from actors roles))))
 (test "Joined query"
   (string-append
