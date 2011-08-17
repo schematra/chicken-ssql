@@ -38,7 +38,7 @@
                                
                                  (match args
                                    ,@(map (lambda (m)
-                                            `(((quote ,(strip-syntax (caar m))) . ,(cdar m))
+                                            `(((quote ,(caar m)) . ,(cdar m))
                                               . ,(cdr m)))
                                           (cddr x))
                                    (_ (apply ancestor self* args))))))))
