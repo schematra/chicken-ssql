@@ -26,13 +26,13 @@
                                       (let ((ssql-op (first op))
                                             (type (second op)))
 
-                                        (unless (memq (strip-syntax type) '(infix infix* suffix prefix function))
+                                        (unless (memq (i type) '(infix infix* suffix prefix function))
                                           (error "unknown operator syntax type" type))
 
                                         (let-optionals (cddr op)
                                             ((sql-op (string-upcase (->string (strip-syntax ssql-op))))
                                              (separator #f))
-                                          `((,(strip-syntax ssql-op) operands)
+                                          `((,(i ssql-op) operands)
                                             (self 'operator->sql ',type ,sql-op ,separator operands)))))
                                     (cddr x))))))))
 
