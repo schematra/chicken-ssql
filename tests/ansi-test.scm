@@ -36,6 +36,14 @@
     "UPDATE actors SET firstname = 'Felix' WHERE (lastname = 'Winkelmann')"
     (ssql->sql #f '(update actors (set (firstname "Felix")) (where (= lastname "Winkelmann"))))))
 
+(test-group "inserts"
+  (test "with sub-queries"
+    "INSERT INTO roles (character, movie_id, actor_id) VALUES ('Dr. Hasenbein', (SELECT id FROM movies WHERE (title = 'Praxis Dr. Hasenbein')), (SELECT id FROM actors WHERE ((firstname = 'Helge') AND (lastname = 'Schneider'))))"
+    (ssql->sql #f '(insert (into roles) (columns character movie_id actor_id)
+                           (values "Dr. Hasenbein"
+                                   (select (columns id) (from movies) (where (= title "Praxis Dr. Hasenbein")))
+                                   (select (columns id) (from actors) (where (and (= firstname "Helge")
+                                                                                  (= lastname "Schneider")))))))))
 
 (test-group "syntax"
   (test "set literals"

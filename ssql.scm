@@ -55,13 +55,17 @@
 
                ((pair->sql pair)
                 (self (car pair) (cdr pair)))
+               
+               ((values vals)
+                (sprintf "(~A)"
+                         (string-intersperse
+                          (map (lambda (s)
+                                 (self 'ssql->sql s #t))
+                               vals)
+                          ", ")))
 
                ((vector->sql vec)
-                (format "(~A)"
-                        (string-intersperse
-                         (map (lambda (s) (self 'ssql->sql s))
-                              (vector->list vec))
-                         ", ")))
+                (self 'values (vector->list vec)))
 
                ((string->sql string)
                 (string-append "'" (self 'escape-string string) "'"))
@@ -103,6 +107,14 @@
                                                         values)
                                                    ", ")))
 
+               ((insert (('into table) ('columns columns ...) values ...))
+                (sprintf "INSERT INTO ~A (~A) VALUES ~A" 
+                         table
+                         (string-intersperse (map symbol->string columns) ", ")
+                         (string-intersperse (map (lambda (val) 
+                                                    (self (car val) (cdr val)))
+                                                  values) ", ")))
+
                ((operator->sql type operator separator operands)
                 (case type
                   ((infix)
@@ -138,11 +150,16 @@
                       type)))
                   (else (error "unknown operator syntax type" type))))
 
-               ((ssql->sql ssql)
+               ((ssql->sql ssql parenthesize?)
                 (let ((handler (alist-ref (list ssql) (self 'type->sql-converters) apply)))
                   (if handler
-                      (self handler ssql)
+                      (if (and parenthesize? (pair? ssql))
+                          (sprintf "(~A)" (self handler ssql))
+                          (self handler ssql))
                       (error "unknown datatype" ssql))))
+
+               ((ssql->sql ssql)
+                (self 'ssql->sql ssql #f))
 
                ((insert-clause clause ssql)
                 (let ((order (self 'clauses-order)))
@@ -180,8 +197,6 @@
 
   (distinct prefix)
   (all prefix)
-
-  (values function)
 
   (upper function)
   (lower function)
