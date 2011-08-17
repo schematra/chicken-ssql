@@ -2,15 +2,15 @@
 (import ssql)
 
 (test-group "selects"
-  (test "Simple query"
+  (test "simple query"
     "SELECT actors.firstname, actors.lastname FROM actors"
     (ssql->sql #f `(select (columns actors.firstname actors.lastname)
                      (from actors))))
-  (test "Many columns"
+  (test "many columns"
     "SELECT actors.id, actors.firstname, actors.lastname, roles.character, roles.movie_id AS movie FROM actors, roles"
     (ssql->sql #f `(select (columns (col actors id firstname lastname) (col roles character (as movie_id movie)))
                      (from actors roles))))
-  (test "Joined query"
+  (test "joined query"
     (string-append
      "SELECT actors.firstname, actors.lastname, roles.character, movies.title "
 
@@ -23,7 +23,7 @@
                                  movies
                                  (on (= movies.id roles.movie_id)))))))
 
-  (test "Order"
+  (test "order"
     "SELECT lastname, firstname FROM people ORDER BY lastname DESC, firstname"
     (ssql->sql #f '(select (columns lastname firstname) (from people) (order (desc lastname) firstname)))))
 
