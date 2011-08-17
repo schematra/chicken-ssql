@@ -26,3 +26,9 @@
   (test "Order"
     "SELECT lastname, firstname FROM people ORDER BY lastname DESC, firstname"
     (ssql->sql #f '(select (columns lastname firstname) (from people) (order (desc lastname) firstname)))))
+
+
+(test-group "syntax"
+  (test "set literals"
+    "SELECT one, two FROM (1, 2)"
+    (ssql->sql #f '(select (columns one two) (from #(1 2))))))
