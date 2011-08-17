@@ -107,13 +107,22 @@
                                                         values)
                                                    ", ")))
 
-               ((insert (('into table) ('columns columns ...) values ...))
-                (sprintf "INSERT INTO ~A (~A) VALUES ~A" 
-                         table
-                         (string-intersperse (map symbol->string columns) ", ")
+               ((insert into values)
+                (sprintf "INSERT INTO ~A VALUES ~A"
+                         into
                          (string-intersperse (map (lambda (val) 
                                                     (self (car val) (cdr val)))
                                                   values) ", ")))
+
+               ((insert (('into table) ('columns columns ...) values ...))
+                (self 'insert
+                      (sprintf "~A (~A)" 
+                               table
+                               (string-intersperse (map symbol->string columns) ", "))
+                      values))
+
+               ((insert (('into table) values ...))
+                (self 'insert table values))
 
                ((operator->sql type operator separator operands)
                 (case type

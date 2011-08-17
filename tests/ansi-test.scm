@@ -43,7 +43,15 @@
                            (values "Dr. Hasenbein"
                                    (select (columns id) (from movies) (where (= title "Praxis Dr. Hasenbein")))
                                    (select (columns id) (from actors) (where (and (= firstname "Helge")
-                                                                                  (= lastname "Schneider")))))))))
+                                                                                  (= lastname "Schneider"))))))))
+
+  (test "multiple records"
+    "INSERT INTO actors (firstname, lastname) VALUES ('Sylvester', 'Stallone'), ('Arnold', 'Schwarzenegger')"
+    (ssql->sql #f '(insert (into actors) (columns firstname lastname) (values "Sylvester" "Stallone") (values "Arnold" "Schwarzenegger"))))
+
+  (test "without explicit columns"
+    "INSERT INTO actors VALUES ('Marlon', 'Brando')"
+    (ssql->sql #f '(insert (into actors) (values "Marlon" "Brando")))))
 
 (test-group "syntax"
   (test "set literals"
