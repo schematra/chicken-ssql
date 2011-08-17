@@ -111,7 +111,7 @@
                 (sprintf "INSERT INTO ~A VALUES ~A"
                          into
                          (string-intersperse (map (lambda (val) 
-                                                    (self (car val) (cdr val)))
+                                                    (self 'ssql->sql val))
                                                   values) ", ")))
 
                ((insert (('into table) ('columns columns ...) values ...))

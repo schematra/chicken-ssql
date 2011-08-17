@@ -45,9 +45,9 @@
                                    (select (columns id) (from actors) (where (and (= firstname "Helge")
                                                                                   (= lastname "Schneider"))))))))
 
-  (test "multiple records"
+  (test "multiple records using vectors for the records"
     "INSERT INTO actors (firstname, lastname) VALUES ('Sylvester', 'Stallone'), ('Arnold', 'Schwarzenegger')"
-    (ssql->sql #f '(insert (into actors) (columns firstname lastname) (values "Sylvester" "Stallone") (values "Arnold" "Schwarzenegger"))))
+    (ssql->sql #f '(insert (into actors) (columns firstname lastname) #("Sylvester" "Stallone") #("Arnold" "Schwarzenegger"))))
 
   (test "without explicit columns"
     "INSERT INTO actors VALUES ('Marlon', 'Brando')"
