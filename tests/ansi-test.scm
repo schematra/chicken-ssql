@@ -27,6 +27,15 @@
     "SELECT lastname, firstname FROM people ORDER BY lastname DESC, firstname"
     (ssql->sql #f '(select (columns lastname firstname) (from people) (order (desc lastname) firstname)))))
 
+(test-group "updates"
+  (test "simple case"
+    "UPDATE actors SET firstname = 'Rube', lastname = 'Goldberg'"
+    (ssql->sql #f '(update actors (set (firstname "Rube") (lastname "Goldberg")))))
+
+  (test "with condition"
+    "UPDATE actors SET firstname = 'Felix' WHERE (lastname = 'Winkelmann')"
+    (ssql->sql #f '(update actors (set (firstname "Felix")) (where (= lastname "Winkelmann"))))))
+
 
 (test-group "syntax"
   (test "set literals"

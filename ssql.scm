@@ -94,6 +94,15 @@
                                                   (string-upcase (symbol->string type))
                                                   (string-join (map (lambda (x) (self 'ssql->sql x)) rest))))))
 
+               ((set values)
+                (string-append "SET "
+                               (string-intersperse (map (lambda (val)
+                                                          (sprintf "~A = ~A" 
+                                                                   (first val)
+                                                                   (self 'ssql->sql (second val))))
+                                                        values)
+                                                   ", ")))
+
                ((operator->sql type operator separator operands)
                 (case type
                   ((infix)
@@ -148,6 +157,7 @@
 
 (define-operators *ansi-translator*
   (select prefix)
+  (update prefix)
   (from prefix "FROM" ", ")
   (where prefix)
   (order prefix "ORDER BY" ", ")
