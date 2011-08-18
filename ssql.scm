@@ -116,6 +116,9 @@
                                      values)
                                 ", ")))
 
+               ((table (table))
+                (symbol->string table))
+
                ((insert into rest)
                 (sprintf "INSERT INTO ~A ~A"
                          into
