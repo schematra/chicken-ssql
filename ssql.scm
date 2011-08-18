@@ -55,17 +55,25 @@
 
                ((pair->sql pair)
                 (self (car pair) (cdr pair)))
-               
-               ((values vals)
+
+               ((list->sql-tuple list)
                 (sprintf "(~A)"
                          (string-intersperse
                           (map (lambda (s)
                                  (self 'ssql->sql s #t))
-                               vals)
+                               list)
+                          ", ")))
+               
+               ((values records)
+                (sprintf "VALUES ~A"
+                         (string-intersperse
+                          (map (lambda (record) 
+                                 (self 'list->sql-tuple record))
+                               records)
                           ", ")))
 
                ((vector->sql vec)
-                (self 'values (vector->list vec)))
+                (self 'list->sql-tuple (vector->list vec)))
 
                ((string->sql string)
                 (string-append "'" (self 'escape-string string) "'"))
@@ -100,29 +108,31 @@
 
                ((set values)
                 (string-append "SET "
-                               (string-intersperse (map (lambda (val)
-                                                          (sprintf "~A = ~A" 
-                                                                   (first val)
-                                                                   (self 'ssql->sql (second val))))
-                                                        values)
-                                                   ", ")))
+                               (string-intersperse
+                                (map (lambda (val)
+                                       (sprintf "~A = ~A" 
+                                                (first val)
+                                                (self 'ssql->sql (second val))))
+                                     values)
+                                ", ")))
 
-               ((insert into values)
-                (sprintf "INSERT INTO ~A VALUES ~A"
+               ((insert into rest)
+                (sprintf "INSERT INTO ~A ~A"
                          into
-                         (string-intersperse (map (lambda (val) 
-                                                    (self 'ssql->sql val))
-                                                  values) ", ")))
+                         (string-intersperse 
+                          (map (lambda (s) 
+                                 (self 'ssql->sql s))
+                               rest))))
 
-               ((insert (('into table) ('columns columns ...) values ...))
+               ((insert (('into table) ('columns columns ...) rest ...))
                 (self 'insert
                       (sprintf "~A (~A)" 
                                table
                                (string-intersperse (map symbol->string columns) ", "))
-                      values))
+                      rest))
 
-               ((insert (('into table) values ...))
-                (self 'insert table values))
+               ((insert (('into table) rest ...))
+                (self 'insert table rest))
 
                ((operator->sql type operator separator operands)
                 (case type
