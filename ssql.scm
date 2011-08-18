@@ -46,7 +46,7 @@
                   (,number? . number->sql)
                   (,vector? . vector->sql)))
 
-               ((clauses-order) '(columns from where order having union))
+               ((clauses-order) '(columns from table into set values where order having union))
 
                ((escape-string string)
                 (string-translate* string '(("'" . "''"))))
