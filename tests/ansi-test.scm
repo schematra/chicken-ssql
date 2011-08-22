@@ -64,4 +64,8 @@
 (test-group "syntax"
   (test "set literals"
     "SELECT one, two FROM (1, 2)"
-    (ssql->sql #f '(select (columns one two) (from #(1 2))))))
+    (ssql->sql #f '(select (columns one two) (from #(1 2)))))
+
+  (test "function calls"
+    "SELECT foo(99, (bar('baz')))"
+    (ssql->sql #f '(select (call foo 99 (call bar "baz"))))))

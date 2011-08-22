@@ -137,6 +137,15 @@
                ((insert (('into table) rest ...))
                 (self 'insert table rest))
 
+               ((call (function args ...))
+                (sprintf "~A(~A)"
+                         function
+                         (string-intersperse
+                          (map (lambda (arg) 
+                                 (self 'ssql->sql arg #t))
+                               args)
+                          ", ")))
+
                ((operator->sql type operator separator operands)
                 (case type
                   ((infix)
