@@ -57,6 +57,10 @@
     "INSERT INTO actors VALUES ('Marlon', 'Brando')"
     (ssql->sql #f '(insert (into actors) (values ("Marlon" "Brando"))))))
 
+(test-group "deletes"
+  (test "DELETE FROM actors WHERE (id IN (10, 11, 93))"
+    (ssql->sql #f '(delete (from actors) (where (in id #(10 11 93)))))))
+
 (test-group "syntax"
   (test "set literals"
     "SELECT one, two FROM (1, 2)"

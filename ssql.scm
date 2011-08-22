@@ -197,6 +197,7 @@
 (define-operators *ansi-translator*
   (select prefix)
   (update prefix)
+  (delete prefix)
   (from prefix "FROM" ", ")
   (where prefix)
   (order prefix "ORDER BY" ", ")
