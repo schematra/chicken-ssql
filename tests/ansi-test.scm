@@ -33,8 +33,11 @@
     (ssql->sql #f '(update (table actors) (set (firstname "Rube") (lastname "Goldberg")))))
 
   (test "with condition"
-    "UPDATE actors SET firstname = 'Felix' WHERE (lastname = 'Winkelmann')"
-    (ssql->sql #f '(update (table actors) (set (firstname "Felix")) (where (= lastname "Winkelmann"))))))
+    "UPDATE actors SET firstname = 'Felix', experience = (SELECT COUNT(*) FROM roles WHERE (actor_id = actors.id)) WHERE (lastname = 'Winkelmann')"
+    (ssql->sql #f '(update (table actors) 
+                           (set (firstname "Felix")
+                                (experience (select (count *) (from roles) (where (= actor_id actors.id)))))
+                           (where (= lastname "Winkelmann"))))))
 
 (test-group "inserts"
   (test "with sub-queries"
@@ -63,9 +66,9 @@
 
 (test-group "syntax"
   (test "set literals"
-    "SELECT one, two FROM (1, 2)"
-    (ssql->sql #f '(select (columns one two) (from #(1 2)))))
+    "SELECT one, two FROM (1, 2, (SELECT MAX(amount) FROM widgets))"
+    (ssql->sql #f '(select (columns one two) (from #(1 2 (select (max amount) (from widgets)))))))
 
   (test "function calls"
-    "SELECT foo(99, (bar('baz')))"
+    "SELECT foo(99, bar('baz'))"
     (ssql->sql #f '(select (call foo 99 (call bar "baz"))))))

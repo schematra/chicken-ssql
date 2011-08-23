@@ -16,6 +16,8 @@
         (and (not (eq? y (car lst)))
              (loop (cdr lst))))))
 
+(define sub-query? (make-parameter #f))
+
 (define-syntax define-operators
   (ir-macro-transformer
    (lambda (x i c)
@@ -26,7 +28,7 @@
                                       (let ((ssql-op (first op))
                                             (type (second op)))
 
-                                        (unless (memq (i type) '(infix infix* suffix prefix function))
+                                        (unless (memq (i type) '(infix infix* suffix prefix suffix* prefix* function))
                                           (error "unknown operator syntax type" type))
 
                                         (let-optionals (cddr op)
@@ -60,7 +62,7 @@
                 (sprintf "(~A)"
                          (string-intersperse
                           (map (lambda (s)
-                                 (self 'ssql->sql s #t))
+                                 (self 'ssql->sql s))
                                list)
                           ", ")))
                
@@ -120,12 +122,13 @@
                 (symbol->string table))
 
                ((insert into rest)
-                (sprintf "INSERT INTO ~A ~A"
-                         into
-                         (string-intersperse 
-                          (map (lambda (s) 
-                                 (self 'ssql->sql s))
-                               rest))))
+                (parameterize ((sub-query? #t))
+                  (sprintf "INSERT INTO ~A ~A"
+                           into
+                           (string-intersperse 
+                            (map (lambda (s) 
+                                   (self 'ssql->sql s))
+                                 rest)))))
 
                ((insert (('into table) ('columns columns ...) rest ...))
                 (self 'insert
@@ -159,38 +162,47 @@
                     (string-append " " operator " ")))
 
                   ((function)
-                   (sprintf "~A(~A)"
-                            operator
-                            (string-intersperse
-                             (map (lambda (operand) 
-                                    (self 'ssql->sql operand))
-                                  operands)
-                             (or separator ", "))))
+                   (parameterize ((sub-query? #t))
+                     (sprintf "~A(~A)"
+                              operator
+                              (string-intersperse
+                               (map (lambda (operand) 
+                                      (self 'ssql->sql operand))
+                                    operands)
+                               (or separator ", ")))))
+                  
                   ((suffix prefix)
-                   (let ((operator (if (eq? type 'prefix)
-                                       (string-append operator " ")
-                                       (string-append " " operator))))
-                     (string-join
-                      (list
-                       (string-intersperse
-                        (map (lambda (operand)
-                               (self 'ssql->sql operand))
-                             operands)
-                        (or separator " ")))
-                      operator
-                      type)))
+                   (let* ((operator (if (eq? type 'prefix)
+                                        (string-append operator " ")
+                                        (string-append " " operator))))
+                     (parameterize ((sub-query? #t))
+                       (string-join
+                        (list
+                         (string-intersperse
+                          (map (lambda (operand)
+                                 (self 'ssql->sql operand))
+                               operands)
+                          (or separator " ")))
+                        operator
+                        type))))
+
+                  ((suffix* prefix*)
+                   (let ((sql (self 'operator->sql 
+                                    (if (eq? 'suffix* type) 'suffix 'prefix)
+                                    operator
+                                    separator
+                                    operands)))
+                     (if (sub-query?)
+                         (sprintf "(~A)" sql)
+                         sql)))
+
                   (else (error "unknown operator syntax type" type))))
 
-               ((ssql->sql ssql parenthesize?)
+               ((ssql->sql ssql)
                 (let ((handler (alist-ref (list ssql) (self 'type->sql-converters) apply)))
                   (if handler
-                      (if (and parenthesize? (pair? ssql))
-                          (sprintf "(~A)" (self handler ssql))
-                          (self handler ssql))
+                      (self handler ssql)
                       (error "unknown datatype" ssql))))
-
-               ((ssql->sql ssql)
-                (self 'ssql->sql ssql #f))
 
                ((insert-clause clause ssql)
                 (let ((order (self 'clauses-order)))
@@ -204,9 +216,9 @@
                 (append target-clause (cdr clause)))))
 
 (define-operators *ansi-translator*
-  (select prefix)
-  (update prefix)
-  (delete prefix)
+  (select prefix*)
+  (update prefix*)
+  (delete prefix*)
   (from prefix "FROM" ", ")
   (where prefix)
   (order prefix "ORDER BY" ", ")
