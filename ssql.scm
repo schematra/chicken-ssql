@@ -141,13 +141,7 @@
                 (self 'insert table rest))
 
                ((call (function args ...))
-                (sprintf "~A(~A)"
-                         function
-                         (string-intersperse
-                          (map (lambda (arg) 
-                                 (self 'ssql->sql arg #t))
-                               args)
-                          ", ")))
+                (self 'operator->sql 'function function #f args))
 
                ((operator->sql type operator separator operands)
                 (case type
