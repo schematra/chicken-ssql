@@ -225,6 +225,7 @@
   (avg function)
   (sum function)
   (count function)
+  (coalesce function)
 
   (distinct prefix)
   (all prefix)
