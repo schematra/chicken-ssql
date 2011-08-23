@@ -66,14 +66,6 @@
                                list)
                           ", ")))
                
-               ((values records)
-                (sprintf "VALUES ~A"
-                         (string-intersperse
-                          (map (lambda (record) 
-                                 (self 'list->sql-tuple record))
-                               records)
-                          ", ")))
-
                ((vector->sql vec)
                 (self 'list->sql-tuple (vector->list vec)))
 
@@ -214,6 +206,7 @@
   (update prefix*)
   (delete prefix*)
   (from prefix "FROM" ", ")
+  (values prefix "VALUES" ", ")
   (where prefix)
   (order prefix "ORDER BY" ", ")
   (having prefix)

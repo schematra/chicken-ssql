@@ -44,21 +44,21 @@
     "INSERT INTO roles (character, movie_id, actor_id) VALUES ('Dr. Hasenbein', (SELECT id FROM movies WHERE (title = 'Praxis Dr. Hasenbein')), (SELECT id FROM actors WHERE ((firstname = 'Helge') AND (lastname = 'Schneider'))))"
     (ssql->sql #f '(insert (into roles) 
                            (columns character movie_id actor_id)
-                           (values ("Dr. Hasenbein"
-                                    (select (columns id) (from movies) (where (= title "Praxis Dr. Hasenbein")))
-                                    (select (columns id) (from actors) (where (and (= firstname "Helge")
-                                                                                   (= lastname "Schneider")))))))))
+                           (values #("Dr. Hasenbein"
+                                     (select (columns id) (from movies) (where (= title "Praxis Dr. Hasenbein")))
+                                     (select (columns id) (from actors) (where (and (= firstname "Helge")
+                                                                                    (= lastname "Schneider")))))))))
 
   (test "multiple records using vectors for the records"
     "INSERT INTO actors (firstname, lastname) VALUES ('Sylvester', 'Stallone'), ('Arnold', 'Schwarzenegger')"
     (ssql->sql #f '(insert (into actors)
                            (columns firstname lastname) 
-                           (values ("Sylvester" "Stallone") 
-                                   ("Arnold" "Schwarzenegger")))))
+                           (values #("Sylvester" "Stallone") 
+                                   #("Arnold" "Schwarzenegger")))))
 
   (test "without explicit columns"
     "INSERT INTO actors VALUES ('Marlon', 'Brando')"
-    (ssql->sql #f '(insert (into actors) (values ("Marlon" "Brando"))))))
+    (ssql->sql #f '(insert (into actors) (values #("Marlon" "Brando"))))))
 
 (test-group "deletes"
   (test "DELETE FROM actors WHERE (id IN (10, 11, 93))"
