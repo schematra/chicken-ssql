@@ -25,7 +25,14 @@
 
   (test "order"
     "SELECT lastname, firstname FROM people ORDER BY lastname DESC, firstname"
-    (ssql->sql #f '(select (columns lastname firstname) (from people) (order (desc lastname) firstname)))))
+    (ssql->sql #f '(select (columns lastname firstname) (from people) (order (desc lastname) firstname))))
+
+  (test "group"
+    "SELECT actors.name, COUNT(roles.id) FROM roles, actors WHERE (roles.actor_id = actors.id) GROUP BY actors.name"
+    (ssql->sql #f '(select (columns (col actors name) (count (col roles id)))
+                     (from roles actors)
+                     (where (= (col roles actor_id) (col actors id)))
+                     (group (col actors name))))))
 
 (test-group "updates"
   (test "simple case"

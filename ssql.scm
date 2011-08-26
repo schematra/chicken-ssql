@@ -48,7 +48,7 @@
                   (,number? . number->sql)
                   (,vector? . vector->sql)))
 
-               ((clauses-order) '(columns from table into set values where order having union))
+               ((clauses-order) '(columns from table into set values where group having order union))
 
                ((escape-string string)
                 (string-translate* string '(("'" . "''"))))
@@ -208,6 +208,7 @@
   (from prefix "FROM" ", ")
   (values prefix "VALUES" ", ")
   (where prefix)
+  (group prefix "GROUP BY" ", ")
   (order prefix "ORDER BY" ", ")
   (having prefix)
   (union infix)
