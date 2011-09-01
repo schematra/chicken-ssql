@@ -78,4 +78,12 @@
 
   (test "function calls"
     "SELECT foo(99, bar('baz'))"
-    (ssql->sql #f '(select (call foo 99 (call bar "baz"))))))
+    (ssql->sql #f '(select (call foo 99 (call bar "baz")))))
+
+  (test "IS NULL"
+    "SELECT 'foo' IS NULL"
+    (ssql->sql #f '(select (null? "foo"))))
+
+  (test "IS NOT NULL"
+    "SELECT NOT 'foo' IS NULL"
+    (ssql->sql #f '(select (not (null? "foo"))))))
