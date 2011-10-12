@@ -1,5 +1,5 @@
 ((synopsis "SQL as S-expressions")
- (category databases)
+ (category db)
  (depends matchable)
  (test-depends test)
  (license "BSD")
