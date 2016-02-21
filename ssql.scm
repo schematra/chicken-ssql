@@ -185,7 +185,7 @@
                   (else (error "unknown operator syntax type" type))))
 
                ((ssql->sql ssql)
-                (let ((handler (alist-ref (list ssql) (self 'type->sql-converters) apply)))
+                (let ((handler (pred-alist-ref ssql (self 'type->sql-converters))))
                   (if handler
                       (self handler ssql)
                       (error "unknown datatype" ssql))))
@@ -253,8 +253,14 @@
 (define (register-sql-engine! predicate translator)
   (set! *sql-engines* (alist-cons predicate translator *sql-engines*)))
 
+(define (pred-alist-ref key alist)
+  (and-let* ((result (find (lambda (pair)
+                             ((car pair) key))
+                           alist)))
+    (cdr result)))
+
 (define (get-sql-engine connection)
-  (alist-ref (list connection) *sql-engines* apply))
+  (pred-alist-ref connection *sql-engines*))
 
 (define (call-with-sql-engine connection proc)
   (let ((engine (get-sql-engine connection)))
