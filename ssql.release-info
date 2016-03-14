@@ -1,5 +1,5 @@
-(repo git "git@gitorious.org:chicken-eggs/{egg-name}.git")
-(uri targz "https://gitorious.org/chicken-eggs/{egg-name}/archive-tarball/{egg-release}")
+(repo git "https://bitbucket.org/DerGuteMoritz/{egg-name}.git")
+(uri targz "https://bitbucket.org/DerGuteMoritz/{egg-name}/get/{egg-release}.tar.gz")
 (release "0.1")
 (release "0.2.0")
 (release "0.2.1")
