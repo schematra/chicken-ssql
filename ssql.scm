@@ -28,7 +28,8 @@
                                       (let ((ssql-op (first op))
                                             (type (second op)))
 
-                                        (unless (memq (i type) '(infix infix* suffix prefix suffix* prefix* function))
+                                        (unless (memq (strip-syntax type)
+                                                      '(infix infix* suffix prefix suffix* prefix* function))
                                           (error "unknown operator syntax type" type))
 
                                         (let-optionals (cddr op)
