@@ -1,6 +1,0 @@
-((synopsis "SQL as S-expressions")
- (category db)
- (depends matchable)
- (test-depends test)
- (license "BSD")
- (author "Peter Bex, Moritz Heidkamp"))

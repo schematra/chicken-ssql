@@ -1,0 +1,11 @@
+((synopsis "SQL as S-expressions")
+ (category db)
+ (dependencies matchable)
+ (test-dependencies test)
+ (license "BSD")
+ (author "Peter Bex, Moritz Heidkamp, Chris Brannon")
+
+ (components
+  (extension ssql
+	     (component-dependencies foops))
+  (extension foops)))
