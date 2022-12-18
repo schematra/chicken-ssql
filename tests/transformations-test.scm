@@ -1,5 +1,4 @@
-(use test)
-(import ssql)
+(import ssql test)
 
 (test-begin "inspection")
 (test "find-tables"

@@ -1,5 +1,4 @@
-(use test)
-(import ssql)
+(import ssql test)
 
 (test-group "composition"
   (test "simple"

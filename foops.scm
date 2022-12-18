@@ -2,11 +2,8 @@
 
 (make-object derive-object)
 
-(import chicken scheme)
-(use matchable)
-(import-for-syntax chicken)
-(begin-for-syntax
- (use srfi-1))
+(import scheme (chicken base) (chicken syntax) matchable)
+(import-for-syntax (chicken syntax) srfi-1)
 
 (define-for-syntax args-without-self 
   '(if (and (pair? args) (procedure? (car args)))

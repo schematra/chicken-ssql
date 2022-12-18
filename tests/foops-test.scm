@@ -1,7 +1,4 @@
-(load-relative "../foops")
-
-(import foops)
-(use test)
+(import (chicken load) foops srfi-1 test)
 
 (test-group "basic functionality"
   (define foo (make-object () ((bar) 'baz)))

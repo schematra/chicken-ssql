@@ -3,11 +3,8 @@
 (ssql->sql ssql-connection scope-table find-tables ssql-compose
  register-sql-engine! define-operators *ansi-translator*)
 
-(import chicken scheme)
-(use matchable data-structures extras srfi-1 srfi-13 foops)
-(import-for-syntax chicken)
-(begin-for-syntax
- (use srfi-1 srfi-13))
+(import scheme (chicken base) (chicken format) (chicken string) foops matchable srfi-1 srfi-13)
+(import-for-syntax (chicken string) srfi-1 srfi-13)
 
 (define (before? x y lst)
   (let loop ((lst lst))

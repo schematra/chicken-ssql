@@ -1,5 +1,4 @@
-(use test)
-(import ssql)
+(import ssql test)
 
 (test-group "selects"
   (test "simple query"
