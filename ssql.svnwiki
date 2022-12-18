@@ -15,6 +15,19 @@ Original idea and implementation foundation by
 features and maintenance by [[/users/moritz-heidkamp|Moritz Heidkamp]].
 Ported to CHICKEN 5, new features and maintenance by Chris Brannon.
 
+=== Repository
+
+This egg is hosted in a fossil repository at [[https://the-brannons.com/fossil/ssql]].
+To clone it run:
+
+<enscript highlight="shell">
+    fossil clone https://the-brannons.com/fossil/ssql
+</enscript>
+
+=== Requirements
+
+* [[matchable]]
+
 === Documentation
 
 To be done, see the unit tests for now.
