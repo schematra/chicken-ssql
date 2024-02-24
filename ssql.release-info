@@ -1,3 +1,3 @@
-(repo fossil "https://the-brannons.com/fossil/ssql")
-(uri targz "https://the-brannons.com/fossil/{egg-name}/tarball/{egg-name}.tar.gz?uuid={egg-release}")
+(repo git "https://git.2mb.codes/~cmb/{egg-name}")
+(uri targz "https://git.2mb.codes/~cmb/{egg-name}/archive/{egg-release}.tar.gz")
 (release "0.3")
