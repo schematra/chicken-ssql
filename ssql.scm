@@ -213,6 +213,7 @@
   (as infix*)
   (asc suffix)
   (desc suffix)
+  (limit prefix)
   (on prefix)
 
   (and infix)
