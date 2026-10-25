@@ -26,6 +26,8 @@ To clone it run:
 
 === Requirements
 
+This egg supports CHICKEN 5 and CHICKEN 6.
+
 * [[matchable]]
 
 === Documentation

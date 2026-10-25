@@ -4,6 +4,7 @@
  register-sql-engine! define-operators *ansi-translator*)
 
 (import scheme (chicken base) (chicken format) (chicken string) foops matchable srfi-1 srfi-13)
+(cond-expand (chicken-6 (import (scheme base))) (else))
 (import-for-syntax (chicken string) srfi-1 srfi-13)
 
 (define (before? x y lst)
