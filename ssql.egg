@@ -1,5 +1,6 @@
 ((synopsis "SQL as S-expressions")
  (category db)
+ (version "0.4")
  (dependencies matchable srfi-1 srfi-13)
  (test-dependencies test)
  (license "BSD")

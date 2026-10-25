@@ -58,6 +58,16 @@ Insert queries:
                 #("Vianok" "Maksim Bahdanovič")))
 </enscript>
 
+Limiting results:
+<enscript hilight="scheme>
+(select (columns id title) (from books) (order (desc id)) (limit 10))
+;; => SELECT id, title FROM books ORDER BY id DESC LIMIT 10
+</enscript>
+
+=== Version History
+
+; 0.4 : Support CHICKEN 6 (the same source builds on CHICKEN 5 and 6). Add the {{limit}} operator.
+
 === See Also
 
 ; [[/egg/ssql-postgresql|ssql-postgresql]] : adapter for PostgreSQL specific SQL extensions
